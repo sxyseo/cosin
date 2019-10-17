@@ -14,6 +14,7 @@ services:
      - $PWD/mysql/data:/var/lib/mysql
      - $PWD/mysql/config:/etc/mysql
      - $PWD/contact-center/config/sql/cskefu-MySQL-slim.sql:/docker-entrypoint-initdb.d/0.cskefu-MySQL-slim.sql
+    command: --max_allowed_packet=32505856
 
   redis:
     image: redis:latest
@@ -39,7 +40,7 @@ services:
     image: "chatopera/contact-center:develop"
     restart: always
     ports:
-      - "8035:8080"
+      - "8035:8035"
       - "8036:8036"
     volumes:
      - $PWD/contact-center/data:/data

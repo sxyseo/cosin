@@ -15,6 +15,7 @@
  */
 package com.chatopera.cc.concurrent.chatbot;
 
+import com.chatopera.bot.exception.ChatbotException;
 import com.chatopera.cc.app.basic.MainContext;
 import com.chatopera.cc.app.cache.CacheHelper;
 import com.chatopera.cc.app.handler.api.request.RestUtils;
@@ -26,7 +27,6 @@ import com.chatopera.cc.app.persistence.repository.AgentUserRepository;
 import com.chatopera.cc.app.persistence.repository.ChatbotRepository;
 import com.chatopera.cc.concurrent.user.UserDataEvent;
 import com.chatopera.cc.util.Constants;
-import com.chatopera.chatbot.ChatbotAPIRuntimeException;
 import com.lmax.disruptor.EventHandler;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -40,6 +40,7 @@ public class ChatbotEventHandler implements EventHandler<UserDataEvent> {
 
     private ChatbotRepository chatbotRes;
     private AgentUserRepository agentUserRes;
+    private static String botServiceUrl;
 
     /**
      * 根据聊天机器人返回数据更新agentUser
@@ -57,15 +58,15 @@ public class ChatbotEventHandler implements EventHandler<UserDataEvent> {
         CacheHelper.getAgentUserCacheBean().put(userid, agentUser, orgi);
     }
 
-    private void chat(final ChatbotEvent payload) throws MalformedURLException, ChatbotAPIRuntimeException {
+    private void chat(final ChatbotEvent payload) throws MalformedURLException, ChatbotException {
         ChatMessage request = (ChatMessage) payload.getData();
         Chatbot c = getChatbotRes()
                 .findOne(request.getAiid());
 
-        logger.info("[chatbot disruptor] chat request baseUrl {}, chatbotID {}, fromUserId {}, textMessage {}", c.getBaseUrl(), c.getChatbotID(), request.getUserid(), request.getMessage());
+        logger.info("[chatbot disruptor] chat request baseUrl {}, chatbot {}, fromUserId {}, textMessage {}", getChatbotServiceUrl(), c.getName(), request.getUserid(), request.getMessage());
         // Get response from Conversational Engine.
-        JSONObject result = c.getApi()
-                .conversation(c.getChatbotID(), request.getUserid(), request.getMessage(), false);
+        com.chatopera.bot.sdk.Chatbot bot = new com.chatopera.bot.sdk.Chatbot(c.getClientId(), c.getSecret(), getChatbotServiceUrl());
+        JSONObject result = bot.conversation(request.getUserid(), request.getMessage());
 
         // parse response
         logger.info("[chatbot disruptor] chat response {}", result.toString());
@@ -85,6 +86,9 @@ public class ChatbotEventHandler implements EventHandler<UserDataEvent> {
             resp.setUserid(request.getUserid());
             resp.setType(request.getType());
             resp.setChannel(request.getChannel());
+            if (data.has("params")) {
+                resp.setExpmsg(data.get("params").toString());
+            }
             resp.setContextid(request.getContextid());
             resp.setSessionid(request.getSessionid());
             resp.setUsession(request.getUsession());
@@ -135,4 +139,11 @@ public class ChatbotEventHandler implements EventHandler<UserDataEvent> {
         return chatbotRes;
     }
 
+
+    public static String getChatbotServiceUrl() {
+        if (botServiceUrl == null) {
+            botServiceUrl = MainContext.getContext().getEnvironment().getProperty("chatopera.bot.url");
+        }
+        return botServiceUrl;
+    }
 }

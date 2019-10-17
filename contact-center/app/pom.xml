@@ -159,9 +159,9 @@
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>3.8</version>
-            <!--$NO-MVN-MAN-VER$-->
+            <artifactId>hazelcast-all</artifactId>
+            <version>3.10.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -181,7 +181,7 @@
         <dependency>
             <groupId>org.lionsoul</groupId>
             <artifactId>ip2region</artifactId>
-            <version>1.4</version>
+            <version>1.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.lionsoul</groupId>
@@ -267,11 +267,6 @@
             <version>2.5.0</version>
         </dependency>
         <dependency>
-            <groupId>org.freeswitch.esl.client</groupId>
-            <artifactId>org.freeswitch.esl.client</artifactId>
-            <version>0.9.2</version>
-        </dependency>
-        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.2</version>
@@ -310,9 +305,34 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.chatopera.chatbot</groupId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.3.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.chatopera.bot</groupId>
             <artifactId>sdk</artifactId>
-            <version>1.1.0</version>
+            <version>1.0.2</version>
         </dependency>
     </dependencies>
     <build>
@@ -346,6 +366,14 @@
                     <attachClasses>true</attachClasses>
                     <warSourceExcludes>**/WEB-INF</warSourceExcludes>
                     <packagingExcludes>**/WEB-INF,**/resources</packagingExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>../config/sql/</directory>
+                            <includes>
+                                <include>cskefu-MySQL-slim.sql</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                 </configuration>
                 <version>2.1.1</version>
             </plugin>
@@ -362,21 +390,17 @@
     </build>
     <repositories>
         <repository>
-            <id>SPRING-LIBS-snapshot</id>
-            <url>https://repo.spring.io/libs-milestone</url>
-        </repository>
-        <repository>
-            <id>mvn_repository</id>
-            <name>MVNREPOSITORY</name>
-            <url>http://repo1.maven.org/maven2</url>
+            <id>chatopera</id>
+            <name>Chatopera Inc.</name>
+            <url>https://nexus.chatopera.com/repository/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
-    <distributionManagement>
-        <repository>
-            <id>SPRING-LIBS-snapshot</id>
-            <url>https://repo.spring.io/libs-milestone</url>
-        </repository>
-    </distributionManagement>
     <developers>
         <developer>
             <id>hain</id>
@@ -384,7 +408,7 @@
             <email>hailiang.hl.wang@gmail.com</email>
             <url>https://github.com/Samurais</url>
             <organization>Chatopera Inc.</organization>
-            <organizationUrl>http://www.chatopera.com</organizationUrl>
+            <organizationUrl>https://www.chatopera.com</organizationUrl>
             <roles>
                 <role>architect</role>
                 <role>developer</role>

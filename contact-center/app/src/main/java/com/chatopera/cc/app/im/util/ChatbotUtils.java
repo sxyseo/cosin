@@ -45,16 +45,6 @@ public class ChatbotUtils {
     private static ChatMessageRepository chatMessageRes;
 
     /**
-     * 使用snsid得到ChatbotID
-     *
-     * @param snsid
-     * @return
-     */
-    public static String resolveChatbotIDWithSnsid(String snsid, String clientId) {
-        return (clientId + "_" + snsid).toLowerCase();
-    }
-
-    /**
      * 使用chatbotID得到snsid
      *
      * @param chatbotID
@@ -172,7 +162,7 @@ public class ChatbotUtils {
      * @param resp
      */
     public static void saveAndPublish(ChatMessage resp) {
-        getChatMessageRes().save(resp);
         NettyClients.getInstance().sendChatbotEventMessage(resp.getUserid(), MainContext.MessageTypeEnum.MESSAGE.toString(), resp);
+        getChatMessageRes().save(resp);
     }
 }
